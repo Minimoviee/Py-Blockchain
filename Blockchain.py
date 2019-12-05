@@ -4,7 +4,6 @@ import datetime
 from urllib.parse import urlparse
 import requests
 
-
 class Blockchain(object):
     def __init__(self):
         """
@@ -147,6 +146,8 @@ class Blockchain(object):
         max_length_chain = len(self.chain)
 
         for node in neighbors:
+            #response = f'http://{node}/chain'
+            #print(response)
             response = requests.get(f'http://{node}/chain')
             if (response.status_code == 200):
                 length = response.json()['length']

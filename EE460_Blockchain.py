@@ -2,6 +2,7 @@ from Blockchain import Blockchain
 from uuid import uuid4
 from textwrap import dedent
 from flask import Flask, jsonify, request
+from argparse import ArgumentParser
 
 # instantiate the node
 app = Flask(__name__)
@@ -17,20 +18,20 @@ blockchain = Blockchain()
 @app.route('/nodes/register', methods = ['POST'])
 def register_nodes():
     values = request.get_json()
-    #print(type(values))
     nodes = values.get('nodes')
-    #nodes = None
     if nodes is None:
-        return "Error: Invalid list of nodes\n" , 400
+        return "Error: Please supply a valid list of nodes", 400
 
     for node in nodes:
         blockchain.register_node(node)
 
     response = {
-        'message' : 'New nodes have been added.',
-        'total_nodes' : list(blockchain.nodes)
+        'message': 'New nodes have been added',
+        'total_nodes': list(blockchain.nodes),
     }
+
     return jsonify(response), 201
+
 
 @app.route('/nodes/resolve', methods = ['GET'])
 def consensus():
@@ -97,7 +98,6 @@ def new_transaction():
     # 201 is the http status for Successful Creation
     return jsonify(response), 201
 
-
 @app.route('/chain', methods = ['GET'])
 def get_full_chain():
     response = {
@@ -108,6 +108,11 @@ def get_full_chain():
     return jsonify(response), 200
 
 
-if __name__ == '__main__':
     #app.run(host = '0.0.0.0', port = 5000)
-    app.run(host = '192.168.56.1', port = 5000)
+if __name__ == '__main__':
+    parser = ArgumentParser()
+    parser.add_argument('-p', '--port', default=5000, type=int, help='port to listen on')
+    args = parser.parse_args()
+    port = args.port
+
+    app.run(host='192.168.56.1', port=port)
